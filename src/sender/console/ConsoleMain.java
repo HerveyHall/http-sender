@@ -6,10 +6,11 @@ import sender.socket.*;
 public class ConsoleMain {
 	private final static String USEAGE = "用法：\r\n\t参数1：GET/POST方法\r\n\t参数2：url\r\n\t参数3：HTTP协议及版本号",
 			METHOD_ERROR = "HTTP协议只支持GET方法和POST方法",
-			INSTRUCTION = "指令集：\r\n\t插入报文头 ：ah <字段> <值>\r\n\t插入报文内容： ac <字段> <值>\r\n\t删除报文头： dh <字段>\r\n\t删除报文内容：dc <字段>\r\n\t发送报文：send <主机>\r\n\t退出程序：exit",
-			INS_TIP = "请输入正确的指令", SUCCESS = "成功", FAILED = "失败", TIMEOUT = "请求超时", SEND = "发送", ADD = "添加", DEL = "删除";
+			INSTRUCTION = "指令集：\r\n\t插入报文头 ：ah <字段> <值>\r\n\t插入报文内容： ac <字段> <值>\r\n\t删除报文头： dh <字段>\r\n\t删除报文内容：dc <字段>\r\n\t获取超时时间：time get\r\n\t设置超时时间：time set <毫秒数>\r\n\t发送报文：send <主机>\r\n\t退出程序：exit",
+			INS_TIP = "请输入正确的指令", SUCCESS = "成功", FAILED = "失败", TIME = "时间", USETIME = "耗时", TIMEOUT = "请求超时",
+			SEND = "发送", ADD = "添加", DEL = "删除", UPD = "修改", EXIT = "感谢使用，再见！", MS = "ms";
 
-	static int time = 100;// 接收报文超时时间10秒
+	static int time = 10000;// 接收报文超时时间10秒
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
@@ -67,6 +68,30 @@ public class ConsoleMain {
 					else
 						Console.writeError(DEL + FAILED);
 					break;
+				case "time":
+					if (ctrls.length > 1)
+						switch (ctrls[1]) {
+						case "get":
+							Console.writeInfo(TIMEOUT + TIME + time + MS);
+							break;
+						case "set":
+							if (ctrls.length > 2)
+								try {
+									time = Integer.parseInt(ctrls[2]);
+									Console.writeInfo(UPD + SUCCESS);
+								} catch (NumberFormatException e) {
+									Console.writeError(INS_TIP);
+								}
+							else
+								Console.writeError(INS_TIP);
+							break;
+						default:
+							Console.writeError(INS_TIP);
+							break;
+						}
+					else
+						Console.writeError(INS_TIP);
+					break;
 				case "send":
 					try {
 						PacketSender sender = new SenderConfig(ctrls[1], 80).getNewSender();
@@ -76,18 +101,21 @@ public class ConsoleMain {
 							Console.writeError(SEND + FAILED);
 							continue label;
 						}
-
-						while (!sender.getStatus() && time-- > 1)
-							Thread.sleep(100);
-						if (time == 0)
+						int tempTime = time;
+						while (!sender.getStatus() && tempTime-- > 1)
+							Thread.sleep(1);
+						if (tempTime == 0)
 							Console.writeError(TIMEOUT);
 						Console.writeInfo("\r\n" + sender.getResponse());
+						Console.writeInfo(USETIME + (time - tempTime) + MS);
+						Console.writeInfo(EXIT);
 						System.exit(0);
 					} catch (Exception e) {
 						Console.writeError(SEND + FAILED);
 						continue label;
 					}
 				case "exit":
+					Console.writeInfo(EXIT);
 					System.exit(0);
 					break;
 				default:
