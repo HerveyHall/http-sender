@@ -6,7 +6,7 @@ import sender.socket.*;
 public class ConsoleMain {
 	private final static String USEAGE = "用法：\r\n\t参数1：GET/POST方法\r\n\t参数2：url\r\n\t参数3：HTTP协议及版本号",
 			METHOD_ERROR = "HTTP协议只支持GET方法和POST方法",
-			INSTRUCTION = "指令集：\r\n\t插入报文头 ：ah <字段> <值>\r\n\t插入报文内容： ac <字段> <值>\r\n\t删除报文头： dh <字段>\r\n\t删除报文内容：dc <字段>\r\n\t获取超时时间：time get\r\n\t设置超时时间：time set <毫秒数>\r\n\t发送报文：send <主机>\r\n\t退出程序：exit",
+			INSTRUCTION = "指令集：\r\n\t插入报文头 ：ah <字段> <值>\r\n\t插入报文内容： ac <字段> <值>\r\n\t删除报文头： dh <字段>\r\n\t删除报文内容：dc <字段>\r\n\t获取超时时间：time get\r\n\t设置超时时间：time set <毫秒数>\r\n\t发送报文：send <主机名> <端口号>\r\n\t退出程序：exit",
 			INS_TIP = "请输入正确的指令", SUCCESS = "成功", FAILED = "失败", TIME = "时间", USETIME = "耗时", TIMEOUT = "请求超时",
 			SEND = "发送", ADD = "添加", DEL = "删除", UPD = "修改", EXIT = "感谢使用，再见！", MS = "ms";
 
@@ -26,6 +26,12 @@ public class ConsoleMain {
 		case "get":
 			packet.setMethod(HttpRequestMethod.GET);
 			break;
+		case "put":
+			packet.setMethod(HttpRequestMethod.PUT);
+		case "delete":
+			packet.setMethod(HttpRequestMethod.DELETE);
+		case "options":
+			packet.setMethod(HttpRequestMethod.OPTIONS);
 		default:
 			Console.writeError(METHOD_ERROR);
 			System.exit(-2);
@@ -94,7 +100,7 @@ public class ConsoleMain {
 					break;
 				case "send":
 					try {
-						PacketSender sender = new SenderConfig(ctrls[1], 80).getNewSender();
+						PacketSender sender = new SenderConfig(ctrls[1], Integer.parseInt(ctrls[2])).getNewSender();
 						if (sender.send(packet))
 							Console.writeInfo(SEND + SUCCESS);
 						else {
