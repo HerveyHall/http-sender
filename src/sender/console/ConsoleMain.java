@@ -4,13 +4,13 @@ import sender.form.*;
 import sender.socket.*;
 
 public class ConsoleMain {
-	private final static String USEAGE = "ÓÃ·¨£º\r\n\t²ÎÊı1£ºGET/POST·½·¨\r\n\t²ÎÊı2£ºurl\r\n\t²ÎÊı3£ºHTTPĞ­Òé¼°°æ±¾ºÅ",
-			METHOD_ERROR = "HTTPĞ­ÒéÖ»Ö§³ÖGET·½·¨ºÍPOST·½·¨",
-			INSTRUCTION = "Ö¸Áî¼¯£º\r\n\t²åÈë±¨ÎÄÍ· £ºah <×Ö¶Î> <Öµ>\r\n\t²åÈë±¨ÎÄÄÚÈİ£º ac <×Ö¶Î> <Öµ>\r\n\tÉ¾³ı±¨ÎÄÍ·£º dh <×Ö¶Î>\r\n\tÉ¾³ı±¨ÎÄÄÚÈİ£ºdc <×Ö¶Î>\r\n\t»ñÈ¡³¬Ê±Ê±¼ä£ºtime get\r\n\tÉèÖÃ³¬Ê±Ê±¼ä£ºtime set <ºÁÃëÊı>\r\n\t·¢ËÍ±¨ÎÄ£ºsend <Ö÷»úÃû> <¶Ë¿ÚºÅ>\r\n\tÍË³ö³ÌĞò£ºexit",
-			INS_TIP = "ÇëÊäÈëÕıÈ·µÄÖ¸Áî", SUCCESS = "³É¹¦", FAILED = "Ê§°Ü", TIME = "Ê±¼ä", USETIME = "ºÄÊ±", TIMEOUT = "ÇëÇó³¬Ê±",
-			SEND = "·¢ËÍ", ADD = "Ìí¼Ó", DEL = "É¾³ı", UPD = "ĞŞ¸Ä", EXIT = "¸ĞĞ»Ê¹ÓÃ£¬ÔÙ¼û£¡", MS = "ms";
+	private final static String USEAGE = "ç”¨æ³•ï¼š\r\n\tå‚æ•°1ï¼šGET/POSTæ–¹æ³•\r\n\tå‚æ•°2ï¼šurl\r\n\tå‚æ•°3ï¼šHTTPåè®®åŠç‰ˆæœ¬å·",
+			METHOD_ERROR = "HTTPåè®®åªæ”¯æŒGETæ–¹æ³•å’ŒPOSTæ–¹æ³•",
+			INSTRUCTION = "æŒ‡ä»¤é›†ï¼š\r\n\tæ’å…¥æŠ¥æ–‡å¤´ ï¼šah <å­—æ®µ> <å€¼>\r\n\tæ’å…¥æŠ¥æ–‡å†…å®¹ï¼š ac <å­—æ®µ> <å€¼>\r\n\tåˆ é™¤æŠ¥æ–‡å¤´ï¼š dh <å­—æ®µ>\r\n\tåˆ é™¤æŠ¥æ–‡å†…å®¹ï¼šdc <å­—æ®µ>\r\n\tè·å–è¶…æ—¶æ—¶é—´ï¼štime get\r\n\tè®¾ç½®è¶…æ—¶æ—¶é—´ï¼štime set <æ¯«ç§’æ•°>\r\n\tå‘é€æŠ¥æ–‡ï¼šsend <ä¸»æœºå> <ç«¯å£å·>\r\n\té€€å‡ºç¨‹åºï¼šexit",
+			INS_TIP = "è¯·è¾“å…¥æ­£ç¡®çš„æŒ‡ä»¤", SUCCESS = "æˆåŠŸ", FAILED = "å¤±è´¥", TIME = "æ—¶é—´", USETIME = "è€—æ—¶", TIMEOUT = "è¯·æ±‚è¶…æ—¶",
+			SEND = "å‘é€", ADD = "æ·»åŠ ", DEL = "åˆ é™¤", UPD = "ä¿®æ”¹", EXIT = "æ„Ÿè°¢ä½¿ç”¨ï¼Œå†è§ï¼", MS = "ms";
 
-	static int time = 10000;// ½ÓÊÕ±¨ÎÄ³¬Ê±Ê±¼ä10Ãë
+	static int time = 10000;// æ¥æ”¶æŠ¥æ–‡è¶…æ—¶æ—¶é—´10ç§’
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
@@ -18,7 +18,7 @@ public class ConsoleMain {
 			Console.writeError(USEAGE);
 			System.exit(-1);
 		}
-		HttpRequestPacket packet = new HttpRequestPacket();
+		HttpRequestPacket packet = new SimpleHttpRequestPacket();
 		switch (args[0].toLowerCase()) {
 		case "post":
 			packet.setMethod(HttpRequestMethod.POST);
@@ -57,7 +57,7 @@ public class ConsoleMain {
 				case "ac":
 					for (int i = 3; i < ctrls.length; ++i)
 						ctrls[i - 1] += ctrls[i] + " ";
-					if (packet.addContentText(new ContentText(ctrls[1], ctrls[2].trim())))
+					if (packet.addContentText(new FormHttpContent(ctrls[1], ctrls[2].trim())))
 						Console.writeInfo(ADD + SUCCESS);
 					else
 						Console.writeError(ADD + FAILED);
@@ -69,7 +69,7 @@ public class ConsoleMain {
 						Console.writeError(DEL + FAILED);
 					break;
 				case "dc":
-					if (packet.deleteContentText(new ContentText(ctrls[1], "")))
+					if (packet.deleteContentText(new FormHttpContent(ctrls[1], "")))
 						Console.writeInfo(DEL + SUCCESS);
 					else
 						Console.writeError(DEL + FAILED);

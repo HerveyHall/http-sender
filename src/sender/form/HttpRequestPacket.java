@@ -2,33 +2,65 @@ package sender.form;
 
 import java.util.*;
 
-public class HttpRequestPacket {
+public abstract class HttpRequestPacket {
 	private String method = "GET";
 	private String url = new String();
 	private String protocol = "HTTP/1.1";
 	private Vector<HeadText> head = new Vector<HeadText>();
-	private Vector<ContentText> content = new Vector<ContentText>();
 
+	/**
+	 * Get the method of the request. 获取请求的方法
+	 * 
+	 * @return The method 请求的方法
+	 */
 	public String getMethod() {
 		return method.toUpperCase();
 	}
 
+	/**
+	 * Set the method of the request. 设置请求的方法
+	 * 
+	 * @param method
+	 *            The method 请求的方法
+	 */
 	public void setMethod(HttpRequestMethod method) {
 		this.method = method.getMethod();
 	}
 
+	/**
+	 * Get the URL of the request. 获取请求的URL信息
+	 * 
+	 * @return The URL 请求的URL
+	 */
 	public String getUrl() {
 		return url;
 	}
 
+	/**
+	 * Set the URL of the request. 设置请求的URL信息
+	 * 
+	 * @param url
+	 *            The URL 请求的URL
+	 */
 	public void setUrl(String url) {
 		this.url = url;
 	}
 
+	/**
+	 * Get the protocol of the request. 获取请求使用的协议
+	 * 
+	 * @return The protocol 请求的协议
+	 */
 	public String getProtocol() {
 		return protocol;
 	}
 
+	/**
+	 * Set the protocol of the request. 设置请求使用的协议
+	 * 
+	 * @param protocol
+	 *            The protocol 请求的协议
+	 */
 	public void setProtocol(String protocol) {
 		this.protocol = protocol;
 	}
@@ -62,33 +94,11 @@ public class HttpRequestPacket {
 		return this.head.size() < size ? true : false;
 	}
 
-	public String getRequestContent() {
-		int size = this.content.size();
-		String content = new String();
-		for (int i = 0; i < size; ++i)
-			content += this.content.get(i).toString() + (i == size - 1 ? "" : "&");
-		return content;
-	}
+	public abstract String getRequestContent();
 
-	public boolean addContentText(ContentText content) {
-		int size = this.content.size();
-		this.content.addElement(content);
-		if (this.content.size() == 1 + size)
-			return true;
-		return false;
-	}
+	public abstract <T extends HttpContent> boolean addContentText(T content);
 
-	public boolean deleteContentText(ContentText content) {
-		int size = this.content.size();
-		Iterator<ContentText> i = this.content.iterator();
-		ContentText elem = null;
-		while (i.hasNext()) {
-			elem = i.next();
-			if (elem.keyEquals(content))
-				i.remove();
-		}
-		return this.content.size() > size ? true : false;
-	}
+	public abstract <T extends HttpContent> boolean deleteContentText(T content);
 
 	public String toString() {
 		return this.method + " " + this.url + " " + this.protocol + "\r\n" + this.getRequestHead() + "\r\n"
